@@ -21,7 +21,7 @@ games_df = games_df[[
     "SEASON", "GAME_DATE", "WL", "MIN", "PTS",
     "FGM", "FGA", "FG_PCT",
     "FG3M", "FG3A", "FG3_PCT", 
-    "REB", "AST", "TOV", "PF", "PLUS_MINUS"
+    "OREB", "REB", "AST", "TOV", "PF", "PLUS_MINUS"
 ]]
 # CSVに保存
 games_df.to_excel("rui_hachimura_games_2019_2025.xlsx", index=False)
