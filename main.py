@@ -16,15 +16,12 @@ for season in seasons:
     all_games.append(df)
 # 結合
 games_df = pd.concat(all_games, ignore_index=True)
-# 必要な列だけ抽出（例：日付、対戦チーム、得点、リバウンド、アシスト、出場時間など）
+# 必要な列だけ抽出（例：日付、得点、リバウンド、アシスト、出場時間など）
 games_df = games_df[[
-    "SEASON", "GAME_DATE", "MATCHUP", "WL", "MIN", "PTS",
+    "SEASON", "GAME_DATE", "WL", "MIN", "PTS",
     "FGM", "FGA", "FG_PCT",
-    "FG3M", "FG3A", "FG3_PCT",
-    "FTM", "FTA", "FT_PCT",
-    "OREB", "DREB", "REB",
-    "AST", "STL", "BLK", "TOV", "PF",
-    "PLUS_MINUS"
+    "FG3M", "FG3A", "FG3_PCT", 
+    "REB", "AST", "TOV", "PF", "PLUS_MINUS"
 ]]
 # CSVに保存
 games_df.to_excel("rui_hachimura_games_2019_2025.xlsx", index=False)
