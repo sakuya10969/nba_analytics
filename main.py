@@ -6,7 +6,7 @@ import pandas as pd
 player_dict = players.find_players_by_full_name("Rui Hachimura")
 rui_id = player_dict[0]['id']   # 八村のIDを取得
 # 2019-20から2024-25シーズンのログをまとめて取得
-seasons = ["2019-20", "2020-21", "2021-22", "2022-23", "2023-24","2024-25"]
+seasons = ["2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25"]
 
 all_games = []
 for season in seasons:
