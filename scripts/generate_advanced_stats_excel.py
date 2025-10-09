@@ -59,9 +59,9 @@ for i, row in games_df.iterrows():
                 "PIE": player_row["PIE"].values[0],
             })
         else:
-            print(f"⚠️ No data for GAME_ID {game_id}")
+            print(f"No data for GAME_ID {game_id}")
     except Exception as e:
-        print(f"❌ Error fetching GAME_ID {game_id}: {e}")
+        print(f"Error fetching GAME_ID {game_id}: {e}")
         time.sleep(3)
         continue
 
