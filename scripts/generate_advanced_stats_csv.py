@@ -72,8 +72,7 @@ for i, row in games_df.iterrows():
 adv_df = pd.DataFrame(advanced_stats_list)
 
 # === CSV出力 ===
-output_path = "../outputs/csv/rui_hachimura_advanced_stats_2019_2025.csv"
-adv_df.to_csv(output_path, index=False)
+adv_df.to_csv("../outputs/csv/rui_hachimura_advanced_stats_2019_2025.csv", index=False)
 
 print(f"\n✅ 取得完了: {len(adv_df)} 試合分のアドバンスドスタッツを保存しました。")
 print(adv_df.head())
