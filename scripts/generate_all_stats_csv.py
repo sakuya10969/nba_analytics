@@ -30,7 +30,7 @@ games_df = games_df[[
     "PLUS_MINUS"
 ]]
 # CSVに保存
-games_df.to_csv("../outputs/rui_hachimura_games_all_stats_2019_2025.csv", index=False)
+games_df.to_csv("../outputs/csv/rui_hachimura_games_all_stats_2019_2025.csv", index=False)
 
 print("取得データ件数:", len(games_df))
 print(games_df.head())

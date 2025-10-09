@@ -24,7 +24,7 @@ games_df = games_df[[
     "OREB", "REB", "AST", "TOV", "PF", "PLUS_MINUS"
 ]]
 # Excelに保存
-games_df.to_excel("../outputs/rui_hachimura_games_2019_2025.xlsx", index=False)
+games_df.to_excel("../outputs/excel/rui_hachimura_games_2019_2025.xlsx", index=False)
 
 print("取得データ件数:", len(games_df))
 print(games_df.head())
