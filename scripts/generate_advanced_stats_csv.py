@@ -3,12 +3,12 @@ from nba_api.stats.static import players
 import pandas as pd
 import time
 
-# === 八村塁のplayer_idを取得 ===
+# 八村塁のplayer_idを取得
 player_dict = players.find_players_by_full_name("Rui Hachimura")
 rui_id = player_dict[0]['id']
 print(f"Rui Hachimura PLAYER_ID: {rui_id}")
 
-# === 対象シーズン ===
+# 対象シーズン
 seasons = ["2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25"]
 
 all_games = []
@@ -20,13 +20,13 @@ for season in seasons:
     df_log["SEASON"] = season
     all_games.append(df_log)
 
-# === 全シーズン結合 ===
+# 全シーズン結合
 games_df = pd.concat(all_games, ignore_index=True)
 
-# === アドバンスドスタッツ格納用 ===
+# アドバンスドスタッツ格納用
 advanced_stats_list = []
 
-# === 各試合のGAME_IDを使って詳細データ取得 ===
+# 各試合のGAME_IDを使って詳細データ取得
 for i, row in games_df.iterrows():
     game_id = row["Game_ID"]
     try:
@@ -65,13 +65,13 @@ for i, row in games_df.iterrows():
         time.sleep(3)
         continue
 
-    # API制限対策で少しウェイト（重要）
+    # API制限対策で少しウェイト
     time.sleep(1.2)
 
-# === DataFrame化 ===
+# DataFrame化
 adv_df = pd.DataFrame(advanced_stats_list)
 
-# === CSV出力 ===
+# CSV出力
 adv_df.to_csv("../outputs/csv/rui_hachimura_advanced_stats_2019_2025.csv", index=False)
 
 print(f"\n✅ 取得完了: {len(adv_df)} 試合分のアドバンスドスタッツを保存しました。")
