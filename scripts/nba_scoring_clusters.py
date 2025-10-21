@@ -10,7 +10,7 @@ df = pd.read_csv("../outputs/csv/nba_players_2024_2025_40games_clustering.csv")
 plot_dir = "../outputs/plots"
 os.makedirs(plot_dir, exist_ok=True)
 # === 特徴量（スコアラー分析用） ===
-features = ["GP", "PTS", "FGA", "FG_PCT", "FG3A", "FG3_PCT", "FTA", "FT_PCT"]
+features = ["GP", "MIN", "PTS", "FGA", "FG_PCT", "FG3A", "FG3_PCT", "FTA", "FT_PCT"]
 X = df[features].fillna(0)
 # === クラスタリング ===
 scaler = StandardScaler()

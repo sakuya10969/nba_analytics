@@ -17,6 +17,9 @@ data = leaguedashplayerstats.LeagueDashPlayerStats(
 df = data.get_data_frames()[0]
 df["SEASON"] = season
 
+# GPが30超えのプレイヤーにフィルタリング
+df_filtered = df[df["GP"] >= 30].reset_index(drop=True)
+
 # 必要なカラムを抽出
 columns = [
     "SEASON",
@@ -42,9 +45,11 @@ columns = [
 ]
 
 # 存在するカラムのみを選択
-available_columns = [col for col in columns if col in df.columns]
-df_selected = df[available_columns].copy()
+available_columns = [col for col in columns if col in df_filtered.columns]
+df_selected = df_filtered[available_columns].copy()
+
+print(f"Total players (GP >= 30): {len(df_selected)}")
 
 # CSV出力
-df_selected.to_csv("../outputs/csv/nba_players_advanced_2024_2025.csv", index=False)
-print("Saved to nba_players_advanced_2024_2025.csv")
+df_selected.to_csv("../outputs/csv/nba_players_advanced_2024_2025_30games.csv", index=False)
+print("Saved to nba_players_advanced_2024_2025_30games.csv")
