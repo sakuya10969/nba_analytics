@@ -51,5 +51,5 @@ df_selected = df_filtered[available_columns].copy()
 print(f"Total players (GP >= 30): {len(df_selected)}")
 
 # CSV出力
-df_selected.to_csv("../outputs/csv/nba_players_advanced_2024_2025_30games.csv", index=False)
-print("Saved to nba_players_advanced_2024_2025_30games.csv")
+df_selected.to_csv("../outputs/csv/nba_players_advanced_2024_2025_30games_clustering.csv", index=False)
+print("Saved to nba_players_advanced_2024_2025_30games_clustering.csv")
