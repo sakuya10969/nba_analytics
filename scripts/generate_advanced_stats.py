@@ -2,6 +2,7 @@ from nba_api.stats.endpoints import playergamelog, boxscoreadvancedv2
 from nba_api.stats.static import players
 import pandas as pd
 import time
+import os
 
 # 八村塁のplayer_idを取得
 player_dict = players.find_players_by_full_name("Rui Hachimura")
@@ -38,30 +39,29 @@ for i, row in games_df.iterrows():
 
         if not player_row.empty:
             advanced_stats_list.append({
-                advanced_stats_list.append({
-                    "SEASON": row["SEASON"],                  # シーズン（例: 2024-25）
-                    "GAME_ID": game_id,                       # 試合ID（ユニークな識別子）
-                    "GAME_DATE": row["GAME_DATE"],            # 試合日
-                    "MATCHUP": row["MATCHUP"],                # 対戦カード（例: LAL vs BOS）
-                    "MIN": player_row["MIN"].values[0],       # 出場時間（分）
+                "SEASON": row["SEASON"],                  # シーズン（例: 2024-25）
+                "GAME_ID": game_id,                       # 試合ID（ユニークな識別子）
+                "GAME_DATE": row["GAME_DATE"],            # 試合日
+                "MATCHUP": row["MATCHUP"],                # 対戦カード（例: LAL vs BOS）
+                "WL": row["WL"],                          # 勝敗（W or L）
+                "MIN": player_row["MIN"].values[0],       # 出場時間（分）
 
-                    "OFF_RATING": player_row["OFF_RATING"].values[0],  # チームオフェンス効率（100ポゼッションあたり得点）
-                    "DEF_RATING": player_row["DEF_RATING"].values[0],  # チームディフェンス効率（100ポゼッションあたり失点）
-                    "NET_RATING": player_row["NET_RATING"].values[0],  # OFF_RATING - DEF_RATING（チームの総合効率）
+                "OFF_RATING": player_row["OFF_RATING"].values[0],  # チームオフェンス効率（100ポゼッションあたり得点）
+                "DEF_RATING": player_row["DEF_RATING"].values[0],  # チームディフェンス効率（100ポゼッションあたり失点）
+                "NET_RATING": player_row["NET_RATING"].values[0],  # OFF_RATING - DEF_RATING（チームの総合効率）
 
-                    "AST_PCT": player_row["AST_PCT"].values[0],        # 味方の得点に対してアシストした割合
-                    "AST_RATIO": player_row["AST_RATIO"].values[0],    # 100ポゼッションあたりのアシスト数
-                    "OREB_PCT": player_row["OREB_PCT"].values[0],      # オフェンスリバウンド率
-                    "DREB_PCT": player_row["DREB_PCT"].values[0],      # ディフェンスリバウンド率
-                    "REB_PCT": player_row["REB_PCT"].values[0],        # トータルリバウンド率
+                "AST_PCT": player_row["AST_PCT"].values[0],        # 味方の得点に対してアシストした割合
+                "AST_RATIO": player_row["AST_RATIO"].values[0],    # 100ポゼッションあたりのアシスト数
+                "OREB_PCT": player_row["OREB_PCT"].values[0],      # オフェンスリバウンド率
+                "DREB_PCT": player_row["DREB_PCT"].values[0],      # ディフェンスリバウンド率
+                "REB_PCT": player_row["REB_PCT"].values[0],        # トータルリバウンド率
 
-                    "TO_RATIO": player_row["TM_TOV_PCT"].values[0],    # チームターンオーバー率（低いほど良い）
-                    "EFG_PCT": player_row["EFG_PCT"].values[0],        # 有効FG％（3Pを1.5倍で評価したシュート効率）
-                    "TS_PCT": player_row["TS_PCT"].values[0],          # True Shooting％（FG・3P・FTを総合した得点効率）
-                    "USG_PCT": player_row["USG_PCT"].values[0],        # 使用率（どれだけ攻撃に関与したか）
-                    "PACE": player_row["PACE"].values[0],              # 試合テンポ（ポゼッションの速さ）
-                    "PIE": player_row["PIE"].values[0],                # Player Impact Estimate（試合全体への影響度）
-                })
+                "TO_RATIO": player_row["TM_TOV_PCT"].values[0],    # チームターンオーバー率（低いほど良い）
+                "EFG_PCT": player_row["EFG_PCT"].values[0],        # 有効FG％（3Pを1.5倍で評価したシュート効率）
+                "TS_PCT": player_row["TS_PCT"].values[0],          # True Shooting％（FG・3P・FTを総合した得点効率）
+                "USG_PCT": player_row["USG_PCT"].values[0],        # 使用率（どれだけ攻撃に関与したか）
+                "PACE": player_row["PACE"].values[0],              # 試合テンポ（ポゼッションの速さ）
+                "PIE": player_row["PIE"].values[0],                # Player Impact Estimate（試合全体への影響度）
             })
         else:
             print(f"No data for GAME_ID {game_id}")
@@ -76,8 +76,12 @@ for i, row in games_df.iterrows():
 # DataFrame化
 adv_df = pd.DataFrame(advanced_stats_list)
 
+# 出力ディレクトリ作成
+output_dir = "../outputs/csv"
+os.makedirs(output_dir, exist_ok=True)
+
 # CSV出力
-adv_df.to_csv("../outputs/csv/rui_hachimura_advanced_stats_2019_2025.csv", index=False)
+adv_df.to_csv(f"{output_dir}/rui_hachimura_advanced_stats_2019_2025.csv", index=False)
 
 print(f"\n 取得完了: {len(adv_df)} 試合分のアドバンスドスタッツを保存しました。")
 print(adv_df.head())
