@@ -36,7 +36,7 @@ output_dir = "../outputs/csv"
 os.makedirs(output_dir, exist_ok=True)
 
 # CSVに保存
-games_df.to_csv(f"{output_dir}/rui_hachimura_games_standard_stats_2019_2025.csv", index=False)
+games_df.to_csv(f"{output_dir}/rui_hachimura_standard_stats_2019_2025.csv", index=False)
 
 print("取得データ件数:", len(games_df))
 print(games_df.head())
