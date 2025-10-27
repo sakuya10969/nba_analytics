@@ -5,19 +5,15 @@ import matplotlib.pyplot as plt
 # データ読み込み
 df = pd.read_csv("../outputs/csv/nba_players_advanced_2024_2025_30games_clustering.csv")
 df_subset = df[["PLAYER_ID", "PLAYER_NAME", "TS_PCT", "USG_PCT"]].dropna().copy()
-
 # USGを%に変換
 if df_subset["USG_PCT"].max() <= 1:
     df_subset["USG_PCT"] = df_subset["USG_PCT"] * 100
-
 # TSを%に変換
 if df_subset["TS_PCT"].max() <= 1:
     df_subset["TS_PCT"] = df_subset["TS_PCT"] * 100
-
 # 分割
 low_usg = df_subset[df_subset["USG_PCT"] < 20].copy()
 high_usg = df_subset[df_subset["USG_PCT"] >= 20].copy()
-
 # 低USGクラスタ分割
 if len(low_usg) > 0:
     q1 = low_usg["TS_PCT"].quantile(0.33)
@@ -29,12 +25,10 @@ if len(low_usg) > 0:
 # 高USGは一律Cluster=3
 if len(high_usg) > 0:
     high_usg["Cluster"] = 3
-
 # 明示的に型を揃えて結合
 low_usg["Cluster"] = low_usg["Cluster"].astype(int)
 high_usg["Cluster"] = high_usg["Cluster"].astype(int)
 df_subset = pd.concat([low_usg, high_usg], ignore_index=True)
-
 # ラベル定義
 cluster_labels = {
     0: "Low USG / Low Efficiency",
@@ -52,7 +46,6 @@ cluster_colors = {
 
 # ラベル追加
 df_subset["Player_Role"] = df_subset["Cluster"].map(cluster_labels)
-
 # プロット
 plt.figure(figsize=(12, 8))
 for i in range(4):
@@ -65,7 +58,6 @@ for i in range(4):
 
 # USG 20%の境界線
 plt.axvline(x=20, color='gray', linestyle='--', alpha=0.6, label="Usage Rate 20%")
-
 # 八村を強調
 rui = df_subset[df_subset["PLAYER_ID"] == 1629060]
 if not rui.empty:

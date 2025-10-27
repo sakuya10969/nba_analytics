@@ -36,10 +36,8 @@ except Exception as e:
 
 # フィルタ: 出場試合数30試合以上
 df_filtered = df[df["GP"] >= 30].reset_index(drop=True)
-
 # 利用可能なカラムを確認
 print("Available columns:", df_filtered.columns.tolist())
-
 # 必要なカラムを抽出
 columns = [
     "PLAYER_ID",        # プレイヤーID
@@ -74,13 +72,10 @@ available_columns = [col for col in columns if col in df_filtered.columns]
 print(f"Using columns: {available_columns}")
 
 df_selected = df_filtered[available_columns].copy()
-
 # 型変換とNaN処理
 df_selected = df_selected.fillna(0)
-
 # 統計情報を確認
 print(f"Total players (>=30 games): {len(df_selected)}")
-
 # 保存
 df_selected.to_csv("../outputs/csv/nba_players_2024_2025_30games_clustering.csv", index=False)
 print(f"Saved to nba_players_2024_2025_30games_clustering.csv")

@@ -23,10 +23,8 @@ for season in seasons:
 
 # 全シーズン結合
 games_df = pd.concat(all_games, ignore_index=True)
-
 # アドバンスドスタッツ格納用
 advanced_stats_list = []
-
 # 各試合のGAME_IDを使って詳細データ取得
 for i, row in games_df.iterrows():
     game_id = row["Game_ID"]
@@ -72,14 +70,11 @@ for i, row in games_df.iterrows():
 
     # API制限対策で少しウェイト
     time.sleep(1.2)
-
 # DataFrame化
 adv_df = pd.DataFrame(advanced_stats_list)
-
 # 出力ディレクトリ作成
 output_dir = "../outputs/csv"
 os.makedirs(output_dir, exist_ok=True)
-
 # CSV出力
 adv_df.to_csv(f"{output_dir}/rui_hachimura_advanced_stats_2019_2025.csv", index=False)
 

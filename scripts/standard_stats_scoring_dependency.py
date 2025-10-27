@@ -7,20 +7,16 @@ import os
 
 # データ読み込み
 standard_df = pd.read_csv("../outputs/csv/rui_hachimura_standard_stats_2019_2025.csv")
-
 # 出力ディレクトリ
 output_dir = "../outputs/plots"
 os.makedirs(output_dir, exist_ok=True)
-
 # 2022–2025シーズンのみ抽出
 target_seasons = ["2022-23", "2023-24", "2024-25"]
 df = standard_df[standard_df["SEASON"].isin(target_seasons)].copy()
-
 # 2P試投数と成功率を作成
 df["FG2A"] = df["FGA"] - df["FG3A"]
 df["FG2M"] = df["FGM"] - df["FG3M"]
 df["FG2_PCT"] = df.apply(lambda x: x["FG2M"] / x["FG2A"] if x["FG2A"] > 0 else 0, axis=1)
-
 # 特徴量
 features = [
     "MIN",
@@ -36,15 +32,12 @@ features = [
 
 X = df[features].fillna(0)
 y = df["PTS"]
-
 # 標準化
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
-
 # 線形回帰モデル
 model = LinearRegression()
 model.fit(X_scaled, y)
-
 # 係数
 coef_df = pd.DataFrame({
     "Feature": features,
