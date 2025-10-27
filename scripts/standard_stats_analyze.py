@@ -1,111 +1,115 @@
 import pandas as pd
 import statsmodels.api as sm
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
 import os
 
-# ファイル読み込み
+# 出力先ディレクトリ
+output_dir = "../outputs/plots"
+os.makedirs(output_dir, exist_ok=True)
+
 input_path = "../outputs/csv/rui_hachimura_standard_stats_2019_2025.csv"
-standard_df = pd.read_csv(input_path)
-# 対象シーズン抽出
+df = pd.read_csv(input_path)
 target_seasons = ["2022-23", "2023-24", "2024-25"]
-df = standard_df[standard_df["SEASON"].isin(target_seasons)].copy()
-# 2P関連の算出
+df = df[df["SEASON"].isin(target_seasons)].copy()
+
 df["FG2A"] = df["FGA"] - df["FG3A"]
 df["FG2M"] = df["FGM"] - df["FG3M"]
 df["FG2_PCT"] = df.apply(lambda x: x["FG2M"] / x["FG2A"] if x["FG2A"] > 0 else 0, axis=1)
-# 特徴量と目的変数（得点予測モデル）
-scoring_features = [
-    "MIN",
-    "FG2A",
-    "FG2_PCT",
-    "FG3A",
-    "FG3_PCT",
-    "FTA",
-    "FT_PCT",
-    "OREB",
-    "TOV"
-]
+
+def run_regression(X, y, label):
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    X_scaled = sm.add_constant(X_scaled)
+    model = sm.OLS(y, X_scaled).fit()
+
+    summary_df = pd.DataFrame({
+        "Feature": ["const"] + list(X.columns),
+        "Coefficient": model.params.values,
+        "P_value": model.pvalues.values,
+        "T_value": model.tvalues.values
+    }).sort_values("P_value")
+
+    print(f"\n=== {label} ===")
+    print(f"帰無仮説: 各変数の係数は0である")
+    print(f"対立仮説: 各変数の係数は0ではない")
+    print(f"有意水準: α = 0.05")
+    
+    # 帰無仮説棄却の判定
+    for _, row in summary_df.iterrows():
+        if row["Feature"] != "const":
+            if row["P_value"] < 0.05:
+                print(f"{row['Feature']}: p={row['P_value']:.4f} < 0.05 → 帰無仮説棄却 (有意)")
+            else:
+                print(f"{row['Feature']}: p={row['P_value']:.4f} ≥ 0.05 → 帰無仮説採択 (非有意)")
+
+    return model, summary_df
+
+def plot_coef_heatmap(summary_df, title, save_path):
+    plt.figure(figsize=(8, len(summary_df)*0.5 + 1))
+    # p値に基づいて色分けのためのマスクを作成
+    data_for_heatmap = summary_df.set_index("Feature")[["Coefficient", "P_value"]]
+    # 有意性に基づいて色を変える（p < 0.05で濃い色、p >= 0.05で薄い色）
+    # p値を0-1の範囲で正規化し、有意性に基づいて調整
+    p_values = data_for_heatmap["P_value"].values
+    significance_mask = p_values < 0.05
+    # 係数とp値を別々にプロット
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, len(summary_df)*0.5 + 1))
+    # 係数のヒートマップ（有意性に基づいて透明度を調整）
+    coef_data = data_for_heatmap[["Coefficient"]].copy()
+    sns.heatmap(
+        coef_data,
+        annot=True, 
+        cmap="RdBu_r", 
+        fmt=".3f", 
+        cbar=True,
+        ax=ax1,
+        center=0
+    )
+    ax1.set_title("Coefficient", fontsize=12, weight="bold")
+    # p値のヒートマップ（0.05を境界として色分け）
+    p_data = data_for_heatmap[["P_value"]].copy()
+    # p値を色分けのために変換（0.05未満は1、以上は0.3として薄く表示）
+    p_colors = np.where(p_values.reshape(-1, 1) < 0.05, 1.0, 0.3)
+    
+    sns.heatmap(
+        p_data,
+        annot=True, 
+        cmap="Reds", 
+        fmt=".4f", 
+        cbar=True,
+        ax=ax2,
+        vmin=0,
+        vmax=1
+    )
+    ax2.set_title("P-value (Dark: p<0.05, Light: p≥0.05)", fontsize=12, weight="bold")
+    # 有意性を視覚的に強調するため、p<0.05の行に枠線を追加
+    for i, (idx, row) in enumerate(data_for_heatmap.iterrows()):
+        if row["P_value"] < 0.05:
+            # 係数のヒートマップに枠線
+            ax1.add_patch(plt.Rectangle((0, i), 1, 1, fill=False, edgecolor='black', lw=3))
+            # p値のヒートマップに枠線
+            ax2.add_patch(plt.Rectangle((0, i), 1, 1, fill=False, edgecolor='black', lw=3))
+    
+    plt.suptitle(f"{title}", fontsize=14, weight="bold")
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=250, bbox_inches='tight')
+    plt.close()
+
+# 得点モデル
+scoring_features = ["MIN", "FG2A", "FG2_PCT", "FG3A", "FG3_PCT", "FTA", "FT_PCT", "OREB", "TOV"]
 X_scoring = df[scoring_features].fillna(0)
 y_scoring = df["PTS"]
-# インデックスをリセットして揃える
-X_scoring = X_scoring.reset_index(drop=True)
-y_scoring = y_scoring.reset_index(drop=True)
-# 標準化
-scaler_scoring = StandardScaler()
-X_scoring_scaled = scaler_scoring.fit_transform(X_scoring)
-# 定数項追加
-X_scoring_scaled = sm.add_constant(X_scoring_scaled)
-# 回帰モデル（p値つき）
-model_scoring = sm.OLS(y_scoring, X_scoring_scaled).fit()
-# 結果出力
-print("得点予測モデル:")
-print(model_scoring.summary())
-# p値をデータフレーム化（有意差一覧）
-summary_scoring_df = pd.DataFrame({
-    "Feature": ["const"] + scoring_features,
-    "Coefficient": model_scoring.params.values,
-    "P_value": model_scoring.pvalues.values,
-    "T_value": model_scoring.tvalues.values
-}).sort_values("P_value")
+model_scoring, summary_scoring_df = run_regression(X_scoring, y_scoring, "scoring model")
 
-print("\n得点予測モデル - 有意差結果")
-print(summary_scoring_df)
+plot_coef_heatmap(summary_scoring_df, "scoring model", os.path.join(output_dir, "scoring_coef_heatmap.png"))
 
-# 出場時間予測モデル
-minutes_features = [
-    "PTS",
-    "FG2M",
-    "FG2_PCT",
-    "FG3M",
-    "FG3_PCT",
-    "FTM",
-    "FT_PCT",
-    "REB",
-    "AST",
-    "STL",
-    "BLK",
-    "TOV",
-]
-
+# 出場時間モデル
+minutes_features = ["PTS", "FG2M", "FG2_PCT", "FG3M", "FG3_PCT", "FTM", "FT_PCT", "OREB", "DREB", "AST", "STL", "BLK", "TOV"]
 X_minutes = df[minutes_features].fillna(0)
 y_minutes = df["MIN"]
-# インデックスをリセットして揃える
-X_minutes = X_minutes.reset_index(drop=True)
-y_minutes = y_minutes.reset_index(drop=True)
-# 標準化
-scaler_minutes = StandardScaler()
-X_minutes_scaled = scaler_minutes.fit_transform(X_minutes)
-# 定数項追加
-X_minutes_scaled = sm.add_constant(X_minutes_scaled)
-# 回帰モデル（p値つき）
-model_minutes = sm.OLS(y_minutes, X_minutes_scaled).fit()
-# 結果出力
-print("出場時間予測モデル:")
-print(model_minutes.summary())
-# p値をデータフレーム化（有意差一覧）
-summary_minutes_df = pd.DataFrame({
-    "Feature": ["const"] + minutes_features,
-    "Coefficient": model_minutes.params.values,
-    "P_value": model_minutes.pvalues.values,
-    "T_value": model_minutes.tvalues.values
-}).sort_values("P_value")
+model_minutes, summary_minutes_df = run_regression(X_minutes, y_minutes, "minutes model")
 
-print("\n出場時間予測モデル - 有意差結果")
-print(summary_minutes_df)
-# 有意水準0.05での帰無仮説検定結果
-print("帰無仮説検定結果(α=0.05):")
-print("得点予測モデル:")
-for idx, row in summary_scoring_df.iterrows():
-    if row["Feature"] != "const":
-        if row["P_value"] < 0.05:
-            print(f"  {row['Feature']}: p={row['P_value']:.4f} → 帰無仮説棄却（有意）")
-        else:
-            print(f"  {row['Feature']}: p={row['P_value']:.4f} → 帰無仮説採択（非有意）")
-
-print("\n出場時間予測モデル:")
-for idx, row in summary_minutes_df.iterrows():
-    if row["Feature"] != "const":
-        if row["P_value"] < 0.05:
-            print(f"  {row['Feature']}: p={row['P_value']:.4f} → 帰無仮説棄却（有意）")
-        else:
-            print(f"  {row['Feature']}: p={row['P_value']:.4f} → 帰無仮説採択（非有意）")
+plot_coef_heatmap(summary_minutes_df, "minutes model", os.path.join(output_dir, "minutes_coef_heatmap.png"))
