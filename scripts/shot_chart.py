@@ -10,7 +10,7 @@ from utils.drawcount import draw_court
 
 # 八村塁のプレイヤーID
 player_id = '1629060'  # Rui Hachimura
-seasons = ['2023-24', '2024-25']
+seasons = ['2022-23', '2023-24', '2024-25']
 # 全シーズンのデータを格納するリスト
 all_shot_data = []
 # 各シーズンのショットチャートデータを取得
@@ -69,12 +69,12 @@ draw_court(outer_lines=True)
 plt.xlim(-250, 250)
 plt.ylim(422.5, -47.5)
 
-plt.title(f'Rui Hachimura Shot Chart - 2023-24 to 2024-25', fontsize=16, weight='bold')
+plt.title(f'Rui Hachimura Shot Chart - 2022-23 to 2024-25', fontsize=16, weight='bold')
 plt.legend()
 # 出力ディレクトリ作成
 plot_dir = "../outputs/plots"
 os.makedirs(plot_dir, exist_ok=True)
 # 保存
-plt.savefig(f"{plot_dir}/rui_hachimura_shot_chart_2023_2025.png", 
+plt.savefig(f"{plot_dir}/rui_hachimura_shot_chart_2022_2025.png", 
             bbox_inches="tight", dpi=300)
-print(f"\n出力完了: {plot_dir}/rui_hachimura_shot_chart_2023_2025.png")
+print(f"\n出力完了: {plot_dir}/rui_hachimura_shot_chart_2022_2025.png")
