@@ -65,11 +65,6 @@ if not rui.empty:
         rui["USG_PCT"], rui["TS_PCT"],
         s=250, color="gold", edgecolor="black", zorder=5, label="Rui Hachimura"
     )
-    plt.text(
-        rui["USG_PCT"].values[0] + 0.6,
-        rui["TS_PCT"].values[0],
-        "Rui Hachimura", color="black", fontsize=11, weight="bold"
-    )
 
 plt.xlabel("Usage Rate (%)", fontsize=12)
 plt.ylabel("True Shooting (%)", fontsize=12)
