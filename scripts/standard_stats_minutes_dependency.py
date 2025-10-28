@@ -26,10 +26,21 @@ X_scaled = scaler.fit_transform(X)
 # 線形回帰モデル
 model = LinearRegression()
 model.fit(X_scaled, y)
+# モデル式の出力
+intercept = model.intercept_
+coefs = model.coef_
+
+print("=== Multiple Linear Regression Equation ===")
+equation = f"MIN = {intercept:.3f}"
+for feature, coef in zip(features, coefs):
+    sign = " + " if coef >= 0 else " - "
+    equation += f"{sign}{abs(coef):.3f}×{feature}"
+print(equation)
+print("=" * 45)
 # 係数データフレーム
 coef_df = pd.DataFrame({
     "Feature": features,
-    "Coefficient": model.coef_
+    "Coefficient": coefs
 })
 coef_df["Abs"] = np.abs(coef_df["Coefficient"])
 coef_df = coef_df.sort_values("Abs", ascending=True)  # 可視化は下→上のため昇順
