@@ -54,6 +54,22 @@ coef_df = coef_df.sort_values("Abs", ascending=True)  # 可視化は下→上の
 r2 = model.score(X_scaled, y)
 print(coef_df)
 print(f"R²: {r2:.3f}")
+
+# モデルの妥当性確認
+y_pred = model.predict(X_scaled)
+residuals = y - y_pred
+
+plt.figure(figsize=(7,5))
+plt.scatter(y_pred, residuals, alpha=0.6)
+plt.axhline(0, color="red", linestyle="--")
+plt.xlabel("Predicted MIN")
+plt.ylabel("Residuals")
+plt.title("Residual Plot - Rui Hachimura Minutes Model")
+plt.tight_layout()
+residual_plot_path = f"{output_dir}/rui_hachimura_minutes_residual_plot.png"
+plt.savefig(residual_plot_path, dpi=300, bbox_inches="tight")
+plt.close()
+
 # 可視化設定
 plt.figure(figsize=(9, 6))
 # 色分け（正: 赤 / 負: 青）
@@ -94,3 +110,4 @@ plt.savefig(output_path, dpi=300, bbox_inches="tight")
 plt.close()
 
 print(f"Saved enhanced plot to {output_path}")
+print(f"Saved residual plot to {residual_plot_path}")
