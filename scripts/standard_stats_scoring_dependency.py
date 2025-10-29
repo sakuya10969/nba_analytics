@@ -12,6 +12,12 @@ os.makedirs(output_dir, exist_ok=True)
 # 対象シーズン
 target_seasons = ["2022-23", "2023-24", "2024-25"]
 df = standard_df[standard_df["SEASON"].isin(target_seasons)].copy()
+# データが試合単位になっているか確認
+print("=== データ確認 ===")
+print(df["SEASON"].value_counts())
+print(df.shape)
+print(df.head())
+print("=" * 20)
 # 2P関連列を生成
 df["FG2A"] = df["FGA"] - df["FG3A"]
 df["FG2M"] = df["FGM"] - df["FG3M"]

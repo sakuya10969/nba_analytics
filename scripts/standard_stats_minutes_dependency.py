@@ -12,12 +12,18 @@ os.makedirs(output_dir, exist_ok=True)
 # 対象シーズン
 target_seasons = ["2022-23", "2023-24", "2024-25"]
 df = standard_df[standard_df["SEASON"].isin(target_seasons)].copy()
+# データが試合単位になっているか確認
+print("=== データ確認 ===")
+print(df["SEASON"].value_counts())
+print(df.shape)
+print(df.head())
+print("=" * 20)
 # 2P関連列を生成
 df["FG2A"] = df["FGA"] - df["FG3A"]
 df["FG2M"] = df["FGM"] - df["FG3M"]
 df["FG2_PCT"] = df.apply(lambda x: x["FG2M"] / x["FG2A"] if x["FG2A"] > 0 else 0, axis=1)
 # 特徴量と目的変数
-features = ["PTS", "FG3M", "FG3_PCT", "OREB", "DREB", "AST"]
+features = ["FG2M", "FG3M", "OREB", "DREB", "AST"]
 X = df[features].fillna(0)
 y = df["MIN"]
 # 標準化
@@ -68,7 +74,7 @@ for bar, value in zip(bars, coef_df["Coefficient"]):
 
 # 軸・タイトル整備
 plt.axvline(0, color="black", linewidth=1)
-plt.xlim(-2, 3)
+plt.xlim(0, 2.5)
 plt.title("Rui Hachimura - Minutes Dependency Model (2022–2025)", fontsize=13, fontweight="bold")
 plt.xlabel("Coefficient", fontsize=11)
 plt.ylabel("Feature", fontsize=11)
