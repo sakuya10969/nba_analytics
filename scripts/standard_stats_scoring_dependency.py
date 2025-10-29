@@ -54,6 +54,22 @@ coef_df = coef_df.sort_values("Abs", ascending=True)
 r2 = model.score(X_scaled, y)
 print(coef_df)
 print(f"R²: {r2:.3f}")
+
+# モデルの妥当性確認
+y_pred = model.predict(X_scaled)
+residuals = y - y_pred
+
+plt.figure(figsize=(7,5))
+plt.scatter(y_pred, residuals, alpha=0.6)
+plt.axhline(0, color="red", linestyle="--")
+plt.xlabel("Predicted PTS")
+plt.ylabel("Residuals")
+plt.title("Residual Plot - Rui Hachimura Scoring Model")
+plt.tight_layout()
+residual_plot_path = f"{output_dir}/rui_hachimura_scoring_residual_plot.png"
+plt.savefig(residual_plot_path, dpi=300, bbox_inches="tight")
+plt.close()
+
 # 可視化
 plt.figure(figsize=(9, 6))
 colors = ["red" if c > 0 else "blue" for c in coef_df["Coefficient"]]
@@ -92,3 +108,4 @@ plt.savefig(output_path, dpi=300, bbox_inches="tight")
 plt.close()
 
 print(f"Saved enhanced plot to {output_path}")
+print(f"Saved residual plot to {residual_plot_path}")
