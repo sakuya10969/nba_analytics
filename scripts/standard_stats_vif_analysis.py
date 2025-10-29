@@ -11,13 +11,20 @@ df = pd.read_csv(input_path)
 # 分析対象シーズン
 target_seasons = ["2022-23", "2023-24", "2024-25"]
 df = df[df["SEASON"].isin(target_seasons)].copy()
+
+# 2P関連列を生成
+df["FG2A"] = df["FGA"] - df["FG3A"]
+df["FG2M"] = df["FGM"] - df["FG3M"]
+df["FG2_PCT"] = df.apply(lambda x: x["FG2M"] / x["FG2A"] if x["FG2A"] > 0 else 0, axis=1)
+
 # 説明変数を選択
 features = [
-    "MIN", "FGA", "FG_PCT", 
-    "FG3A", "FG3_PCT", 
-    "FTA", "FT_PCT",
-    "OREB", "DREB", "REB", 
-    "AST", "STL", "BLK", "TOV", "PF"
+    "MIN", "PTS",
+    "FG2M", "FG2A", "FG2_PCT",
+    "FG3M", "FG3A", "FG3_PCT",
+    "FTM", "FTA", "FT_PCT",
+    "OREB", "DREB", "REB",
+    "AST", "STL", "BLK", "TOV"
 ]
 
 X = df[features].fillna(0)
@@ -74,7 +81,7 @@ plt.close()
 # 2. 相関ヒートマップ
 plt.figure(figsize=(12, 10))
 correlation_matrix = X.corr()
-mask = correlation_matrix.abs() < 0.3  # 弱い相関をマスク
+mask = correlation_matrix.abs() < 0.6
 
 sns.heatmap(correlation_matrix,
             annot=True,
@@ -85,7 +92,7 @@ sns.heatmap(correlation_matrix,
             mask=mask,
             cbar_kws={"shrink": .8})
 
-plt.title("Rui Hachimura Stats Correlation Matrix (|r| ≥ 0.3)", fontsize=14, fontweight='bold')
+plt.title("Rui Hachimura Stats Correlation Matrix (|r| ≥ 0.6)", fontsize=14, fontweight='bold')
 plt.tight_layout()
 plt.savefig(f"{output_dir}/rui_hachimura_correlation_heatmap.png", dpi=300, bbox_inches="tight")
 plt.close()

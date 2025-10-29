@@ -107,7 +107,7 @@ model_scoring, summary_scoring_df = run_regression(X_scoring, y_scoring, "scorin
 plot_coef_heatmap(summary_scoring_df, "scoring model", os.path.join(output_dir, "scoring_coef_heatmap.png"))
 
 # 出場時間モデル
-minutes_features = ["PTS", "FG2M", "FG2_PCT", "FG3M", "FG3_PCT", "FTM", "FT_PCT", "OREB", "DREB", "AST", "STL", "BLK", "TOV"]
+minutes_features = ["FG2M", "FG3M", "FTM", "OREB", "DREB", "AST", "STL", "BLK", "TOV"]
 X_minutes = df[minutes_features].fillna(0)
 y_minutes = df["MIN"]
 model_minutes, summary_minutes_df = run_regression(X_minutes, y_minutes, "minutes model")
