@@ -19,11 +19,11 @@ df["FG2_PCT"] = df.apply(lambda x: x["FG2M"] / x["FG2A"] if x["FG2A"] > 0 else 0
 
 # 説明変数を選択
 features = [
-    "MIN", "PTS",
+    "MIN",
     "FG2M", "FG2A", "FG2_PCT",
     "FG3M", "FG3A", "FG3_PCT",
     "FTM", "FTA", "FT_PCT",
-    "OREB", "DREB", "REB",
+    "OREB", "DREB",
     "AST", "STL", "BLK", "TOV"
 ]
 
@@ -40,9 +40,9 @@ print("=== 八村塁スタッツのVIF(多重共線性チェック)分析 ===")
 print(vif_df.sort_values("VIF", ascending=False).to_string(index=False))
 # 結果の解釈ガイド
 print("\n判定ガイド:")
-print("  VIF < 5    → 問題なし")
-print("  5〜10     → 注意（相関強め）")
-print("  >10       → 多重共線性あり")
+print("VIF < 5    → 問題なし")
+print("5〜10     → 注意（相関強め）")
+print(">10       → 多重共線性あり")
 # 出力ディレクトリ作成
 output_dir = "../outputs/plots"
 os.makedirs(output_dir, exist_ok=True)
@@ -71,8 +71,8 @@ plt.axvline(x=10, color='red', linestyle='--', alpha=0.8, label='VIF = 10 (Probl
 
 plt.xlabel('VIF Value', fontsize=12)
 plt.ylabel('Statistical Features', fontsize=12)
-plt.title('Rui Hachimura Stats VIF (Multicollinearity Check) Analysis', fontsize=14, fontweight='bold')
-plt.legend()
+plt.title('Rui Hachimura Stats VIF Analysis (2022–2025)', fontsize=14, fontweight='bold')
+plt.legend(loc='lower right')
 plt.grid(axis='x', alpha=0.3)
 plt.tight_layout()
 plt.savefig(f"{output_dir}/rui_hachimura_vif_analysis.png", dpi=300, bbox_inches="tight")
@@ -92,7 +92,7 @@ sns.heatmap(correlation_matrix,
             mask=mask,
             cbar_kws={"shrink": .8})
 
-plt.title("Rui Hachimura Stats Correlation Matrix (|r| ≥ 0.6)", fontsize=14, fontweight='bold')
+plt.title("Rui Hachimura Stats Correlation Matrix (|r| ≥ 0.6) (2022–2025)", fontsize=14, fontweight='bold')
 plt.tight_layout()
 plt.savefig(f"{output_dir}/rui_hachimura_correlation_heatmap.png", dpi=300, bbox_inches="tight")
 plt.close()
