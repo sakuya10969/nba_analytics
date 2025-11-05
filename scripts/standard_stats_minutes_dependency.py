@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
+import scipy.stats as stats
 import os
 
 # データ読み込み
@@ -70,6 +71,18 @@ residual_plot_path = f"{output_dir}/rui_hachimura_minutes_residual_plot.png"
 plt.savefig(residual_plot_path, dpi=300, bbox_inches="tight")
 plt.close()
 
+# QQプロット（残差の正規性確認）
+plt.figure(figsize=(7,5))
+stats.probplot(residuals, dist="norm", plot=plt)
+plt.title("Q-Q Plot - Rui Hachimura Minutes Model Residuals")
+plt.xlabel("Theoretical Quantiles")
+plt.ylabel("Sample Quantiles")
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+qq_plot_path = f"{output_dir}/rui_hachimura_minutes_qq_plot.png"
+plt.savefig(qq_plot_path, dpi=300, bbox_inches="tight")
+plt.close()
+
 # 可視化設定
 plt.figure(figsize=(9, 6))
 # 色分け（正: 赤 / 負: 青）
@@ -111,3 +124,4 @@ plt.close()
 
 print(f"Saved enhanced plot to {output_path}")
 print(f"Saved residual plot to {residual_plot_path}")
+print(f"Saved Q-Q plot to {qq_plot_path}")
