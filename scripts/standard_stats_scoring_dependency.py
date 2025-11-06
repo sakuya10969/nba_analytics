@@ -53,8 +53,14 @@ coef_df["Abs"] = np.abs(coef_df["Coefficient"])
 coef_df = coef_df.sort_values("Abs", ascending=True)
 # モデルスコア
 r2 = model.score(X_scaled, y)
+# 自由度調整済み決定係数の計算
+n = len(y)  # サンプル数
+p = len(features)  # 特徴量数
+adjusted_r2 = 1 - (1 - r2) * (n - 1) / (n - p - 1)
+
 print(coef_df)
 print(f"R²: {r2:.3f}")
+print(f"Adjusted R²: {adjusted_r2:.3f}")
 
 # モデルの妥当性確認
 y_pred = model.predict(X_scaled)
@@ -108,7 +114,7 @@ plt.ylabel("Feature", fontsize=11)
 plt.grid(axis="x", linestyle="--", alpha=0.6)
 plt.text(
     0.95, 0.05,
-    f"$R^2$ = {r2:.3f}",
+    f"$R^2$ = {r2:.3f}\nAdjusted $R^2$ = {adjusted_r2:.3f}",
     ha="right", va="bottom",
     transform=plt.gca().transAxes,
     fontsize=11,
