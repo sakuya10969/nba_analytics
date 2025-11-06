@@ -37,6 +37,20 @@ def run_regression(X, y, label):
     print(f"対立仮説: 各変数の係数は0ではない")
     print(f"有意水準: α = 0.05")
     
+    # F検定の結果
+    f_statistic = model.fvalue
+    f_pvalue = model.f_pvalue
+    print(f"\nF検定")
+    print(f"帰無仮説: 全ての回帰係数が0である (モデルに説明力がない)")
+    print(f"対立仮説: 少なくとも1つの回帰係数が0ではない (モデルに説明力がある)")
+    print(f"F統計量: {f_statistic:.4f}")
+    print(f"p値: {f_pvalue:.4f}")
+    if f_pvalue < 0.05:
+        print(f"p={f_pvalue:.4f} < 0.05 → 帰無仮説棄却 (モデル全体として有意)")
+    else:
+        print(f"p={f_pvalue:.4f} ≥ 0.05 → 帰無仮説採択 (モデル全体として非有意)")
+    
+    print(f"\n各変数のt検定")
     # 帰無仮説棄却の判定
     for _, row in summary_df.iterrows():
         if row["Feature"] != "const":
